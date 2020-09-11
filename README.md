@@ -16,6 +16,10 @@ RabbitMQ、FastDFS等主要框架和中间件。
 
 希望能努力打造一套从 `SaaS基础框架` - `分布式微服务架构` - `持续集成` - `系统监测` 的解决方案。`本项目旨在实现基础能力，不涉及具体业务。`
 
+## 分支介绍
+1. master 分支为最新的稳定版本，每次提交都会升级一个版本号
+2. dev 分支为作者的开发分支，作者开发的最新功能会实时提交上来，喜欢尝鲜的可以切换为dev。 但可能有报错、漏提等，对项目不是很熟的朋友千万别尝试。
+3. tag 每个固定的版本都会打一个tag方便后续切换任意版本。
 
 ## 模式介绍
 本项目可以通过配置，轻松切换项目的 **租户模式**。
@@ -30,35 +34,22 @@ RabbitMQ、FastDFS等主要框架和中间件。
 | 模式\描述  | 表中有无租户字段 | 实体类中有无租户字段 | 分布式事务| 有几个数据库 |  
 |---|---|---|---|---|
 | NONE | 无 | 无 | 支持 | zuihou_defaults | 
-| COLUMN | 有 | 无 | 支持 | zuihou_defaults |
-| SCHEMA | 无 | 无 | 支持 | zuihou_defaults、zuihou_base_{tenant} |
-| DATASOURCE | 无 | 无 | 支持 | zuihou_defaults、zuihou_base_{tenant} |
+| COLUMN | 有 | 无 | 支持 | zuihou_column |
+| SCHEMA | 无 | 无 | 支持 | zuihou_defaults、zuihou_base_{tenant}、zuihou_extend_{tenant} |
+| DATASOURCE | 无 | 无 | 支持 | zuihou_defaults、zuihou_base_{tenant}、zuihou_extend_{tenant}、自定义库 |
 
-
-部署方面, 可以采用以下几种方式：
-- IDEA 启动
-- jar部署
-- docker部署
-- k8s部署
-- jenkins自动化部署
-
-## 如果觉得对您有任何一点帮助，请点右上角 "Star" 支持一下吧，谢谢！
-
-## 详细文档: https://www.kancloud.cn/zuihou/zuihou-admin-cloud
-
-    ps: gitee捐献 或者 二维码打赏（本页最下方）： 45元及以上 并 备注邮箱，可得开发文档一份（支持后续更新）
-    打赏或者捐献后直接加群：1039545140 并备注打赏时填写的邮箱，可以持续的获取最新的文档。 
-
-## 收费版
-本项目分为开源版和收费版，github和gitee上能搜索到的为开源版本，遵循Apache协议。 收费版源码在私有gitlab托管，购买后开通账号。
-
-收费版和开源版区别请看：[收费版](收费版.md)
-
-
-## 交流群： 63202894（主群）、 1011148503（2号群）
-![qq群.png](docs/image/qq群.png) <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=958f380cb111bcea0cfe35cc5996c47b72ae17a3757807599d1f5ad4fa3c4f6b"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="zuihou-admin-cloud 交流" title="zuihou-admin-cloud 交流"></a>
-
-    加群前请先将下方项目点star，支持下群主，谢谢😘
+## SCHEMA、DATASOURCE 模式各个服务链接的库和描述
+| 后台服务 | 项目名 | 启动时连接的库 | 运行时租户库 | 功能描述 |  
+|---|---|---|---|---|
+| 认证服务 | zuihou-oauth | zuihou_defaults | zuihou_base_{tenant} | 负责登录、用户必备的数据接口 | 
+| 权限服务 | zuihou-authority | zuihou_defaults | zuihou_base_{tenant} | 权限、公共、组织架构等基础功能。 后期考虑更名为 zuihou-base(欢迎提建议) |
+| 文件服务 | zuihou-file | zuihou_defaults | zuihou_base_{tenant} | 负责文件上传、下载等功能 |
+| 消息服务 | zuihou-msgs | zuihou_defaults | zuihou_base_{tenant} | 负责站内信、消息、短信、邮件等功能 |
+| 租户服务 | zuihou-tenant | zuihou_defaults | zuihou_defaults | 负责租户模式管理租户 |
+| 网关服务 | zuihou-gate | zuihou_defaults | zuihou_extend_{tenant} | 负责统一路由、认证、限流等 |
+| 订单服务 | zuihou-order | zuihou_defaults | zuihou_extend_{tenant} | 演示用 |
+| 演示服务 | zuihou-demo | zuihou_defaults | zuihou_extend_{tenant} | 演示用 |
+| 定时服务 | zuihou-jobs | zuihou_defaults | zuihou_base_{tenant}、zuihou_extend_{tenant} | 负责定时任务 |
 
 ## 项目代码地址防走丢
 
@@ -222,9 +213,32 @@ B公司和C公司分别拿着账号， 在 zuihou-ui(租户后台) 上试用， 
 | ![预览.png](docs/image/项目相关/swagger获取token.jpg) | ![预览.png](docs/image/项目相关/admin-api.png)  |
 | ![预览.png](docs/image/1000star.png) | ![预览.png](docs/image/项目相关/zuihou-jobs-server.png) |
 
-## 写在最后：
-    本项目正在开发阶段，由于码主白天要上班，只有晚上、周末能挤点时间来敲敲代码，所以进度可能比较慢，文档、注释也不齐全。 
-    各位大侠就将就着看，但随着时间的推移。文档，注释，启动说明等码主我一定会补全的。   
+## 友情链接 & 特别鸣谢
+* SaaS型微服务快速开发平台：[https://github.com/zuihou/zuihou-admin-cloud](https://github.com/zuihou/zuihou-admin-cloud)
+* SaaS型单体快速开发平台：[https://github.com/zuihou/zuihou-admin-boot](https://github.com/zuihou/zuihou-admin-boot)
+* MyBatis-Plus：[https://mybatis.plus/](https://mybatis.plus/)
+* knife4j：[http://doc.xiaominfo.com/](http://doc.xiaominfo.com/)
+* hutool：[https://hutool.cn/](https://hutool.cn/)
+* xxl-job：[http://www.xuxueli.com/xxl-job/](http://www.xuxueli.com/xxl-job/)
+* kkfileview：[https://kkfileview.keking.cn](https://kkfileview.keking.cn)
+* j2cache：[https://gitee.com/ld/J2Cache](https://gitee.com/ld/J2Cache)
+* FEBS Cloud Web： [https://gitee.com/mrbirdd/FEBS-Cloud-Web](https://gitee.com/mrbirdd/FEBS-Cloud-Web)
+    zuihou-ui 和 zuihou-admin-ui 基于本项目改造
+* Cloud-Platform： [https://gitee.com/geek_qi/cloud-platform](https://gitee.com/geek_qi/cloud-platform)
+    作者学习时接触到的第一个微服务项目
+
+## 感谢 JetBrains 提供的免费开源 License：
+
+[![JetBrains](docs/image/jetbrains.png)](https://www.jetbrains.com/?from=zuihou-admin-cloud)
+    
+## 交流群： 63202894（主群）、 1011148503（2号群）
+![qq群.png](docs/image/qq群.png) <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=958f380cb111bcea0cfe35cc5996c47b72ae17a3757807599d1f5ad4fa3c4f6b"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="zuihou-admin-cloud 交流" title="zuihou-admin-cloud 交流"></a>
+
+    加群前请先将下方项目点star，支持下群主，谢谢😘
+
+## 如果觉得对您有任何一点帮助，请点右上角 "Star" 支持一下吧，谢谢！
+
+## 详细文档: https://www.kancloud.cn/zuihou/zuihou-admin-cloud
 
 ## 项目不错，支持一下吧
 ![扫码支持.png](docs/image/请作者买瓶防脱发药水吧.png)
@@ -232,3 +246,6 @@ B公司和C公司分别拿着账号， 在 zuihou-ui(租户后台) 上试用， 
     ps: gitee捐献 或者 二维码打赏（本页最下方）： 45元及以上 并 备注邮箱，可得开发文档一份（支持后续更新） 
         打赏或者捐献后直接加群：1039545140 并备注打赏时填写的邮箱，可以持续的获取最新的文档。 
     
+## 写在最后：
+    本项目正在开发阶段，由于码主白天要上班，只有晚上、周末能挤点时间来敲敲代码，所以进度可能比较慢，文档、注释也不齐全。 
+    各位大侠就将就着看，但随着时间的推移。文档，注释，启动说明等码主我一定会补全的。   

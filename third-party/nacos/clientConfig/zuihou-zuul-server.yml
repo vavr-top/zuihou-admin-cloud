@@ -7,6 +7,9 @@ zuihou:
     enabled: false
   webmvc:
     enabled: true
+  database:
+    tenantDatabasePrefix: zuihou_extend
+
 spring:
   mvc:
     servlet:
@@ -31,12 +34,15 @@ zuul:
   #  prefix: /api #为zuul设置一个公共的前缀
   #  strip-prefix: false     #对于代理前缀默认会被移除   故加入false  表示不要移除
   routes:  # 路由配置方式
-    authority:  # 其中 authority 是路由名称，可以随便定义，但是path和service-id需要一一对应
+    authority: # 其中 authority 是路由名称，可以随便定义，但是path和service-id需要一一对应
       path: /authority/**
       serviceId: zuihou-authority-server
     oauth:
       path: /oauth/**
       serviceId: zuihou-oauth-server
+    tenant:
+      path: /tenant/**
+      serviceId: zuihou-tenant-server
     file:
       path: /file/**
       serviceId: zuihou-file-server
@@ -49,3 +55,21 @@ zuul:
     demo:
       path: /demo/**
       serviceId: zuihou-demo-server
+
+
+ignore:
+  token:
+    url:
+      - /error
+      - /actuator/**
+      - /gate/**
+      - /static/**
+      - /anno/**
+      - /**/anno/**
+      - /**/swagger-ui.html
+      - /**/doc.html
+      - /**/webjars/**
+      - /**/v2/api-docs/**
+      - /**/v2/api-docs-ext/**
+      - /**/swagger-resources/**
+      - /api/gate/ds/**

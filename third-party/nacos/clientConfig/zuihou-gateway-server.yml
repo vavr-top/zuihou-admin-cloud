@@ -3,6 +3,9 @@ zuihou:
     enabled: false
   webmvc:
     enabled: false
+  database:
+    tenantDatabasePrefix: zuihou_extend
+
 spring:
   autoconfigure:
     exclude: io.seata.integration.http.HttpAutoConfiguration
@@ -19,6 +22,12 @@ spring:
           uri: lb://zuihou-oauth-server
           predicates:
             - Path=/oauth/**
+          filters:
+            - StripPrefix=1
+        - id: tenant
+          uri: lb://zuihou-tenant-server
+          predicates:
+            - Path=/tenant/**
           filters:
             - StripPrefix=1
         - id: file
@@ -62,3 +71,22 @@ server:
   port: 8760
   servlet:
     context-path: /api
+
+
+
+ignore:
+  token:
+    url:
+      - /error
+      - /actuator/**
+      - /gate/**
+      - /static/**
+      - /anno/**
+      - /**/anno/**
+      - /**/swagger-ui.html
+      - /**/doc.html
+      - /**/webjars/**
+      - /**/v2/api-docs/**
+      - /**/v2/api-docs-ext/**
+      - /**/swagger-resources/**
+      - /ds/**

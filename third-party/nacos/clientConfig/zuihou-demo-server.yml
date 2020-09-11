@@ -1,7 +1,7 @@
 zuihou:
   database:
     isSeata: false
-    multiTenantType: SCHEMA
+    tenantDatabasePrefix: zuihou_extend
   swagger:
     docket:
       demo:

@@ -1,7 +1,7 @@
 zuihou:
   database:
     isSeata: false
-    #multiTenantType: SCHEMA
+    tenantDatabasePrefix: zuihou_extend
   swagger:
     base-package: com.github.zuihou.order.controller
     title: 订单服务

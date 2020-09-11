@@ -1,6 +1,4 @@
 # 在这里配置 所有的服务 和 所有环境 都相同的配置
-# 如果有个别服务，或者个别环境需要个性化配置， 只需要将配置，单独复制到指定的服务-${profiles.active}.yml即可
-
 zuihou:
   zipkin:
     enabled: false
@@ -9,15 +7,11 @@ zuihou:
     license: Powered By zuihou
     licenseUrl: https://github.com/zuihou
     termsOfServiceUrl: https://github.com/zuihou
-    version: 2.5.0
+    version: 2.5.1
     contact:
       url: https://github.com/zuihou
       name: zuiou
       email: 306479353@qq.com
-    # apiKeys: # api key 不能设置默认参数，所以调整到全局参数中
-    #   - name: 用户身份token
-    #     keyname: token
-    #     passAs: header
     global-operation-parameters:
       - name: token
         description: 用户身份token
@@ -159,4 +153,3 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 1200000
-
