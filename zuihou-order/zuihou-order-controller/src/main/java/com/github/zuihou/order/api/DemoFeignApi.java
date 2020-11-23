@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 测试日期类型API接口
@@ -29,7 +30,7 @@ public interface DemoFeignApi {
                  @RequestParam(value = "ldt", required = false) LocalDateTime ldt);
 
     @PostMapping("/post")
-    R<RestTestDTO> post(@RequestParam("key") String key);
+    R<RestTestDTO> post(@RequestParam("key") ConcurrentHashMap String key);
 
     @PostMapping("/post2")
     R<RestTestDTO> post(@RequestBody RestTestDTO order);

@@ -1,0 +1,15 @@
+version: '3'
+services:
+  sentinel-dashboard:
+    image: cike/sentinel-dashboard-docker:latest
+    container_name: vavr-sentinel-dashboard
+    restart: always
+    networks:
+      - vavr-top
+    ports:
+      - 8021:8021
+    env_file: ./env/sentinel-dashboard.env
+
+networks:
+  vavr-top:
+    external: true

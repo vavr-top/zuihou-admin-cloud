@@ -3,13 +3,13 @@ zuihou:
     ip: ${MYSQL_IP:127.0.0.1}
     port: 3306
     username: root
-    password: root
+    password: xeelink
     database: zuihou_defaults
     driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${zuihou.mysql.ip}:${zuihou.mysql.port}/${zuihou.mysql.database}?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true
   redis:
     ip: 127.0.0.1
-    port: 16379
+    port: 36379
     database: 0
     password: SbtyMveYNfLzTks7H0apCmyStPzWJqjy
   database:

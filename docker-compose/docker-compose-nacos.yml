@@ -1,0 +1,71 @@
+version: '3'
+services:
+  nacos1:
+    hostname: nacos1
+    container_name: vavr-nacos-8848
+    image: nacos/nacos-server:latest
+    volumes:
+      - ./data/nacos/cluster-logs/nacos1:/home/nacos/logs
+      - ./data/nacos/init.d/custom.properties:/home/nacos/init.d/custom.properties
+    ports:
+      - "38848:8848"
+      - "39555:9555"
+    env_file:
+      - ./env/nacos-hostname.env
+    restart: always
+    networks:
+      - vavr-top
+    depends_on:
+      - mysql
+  nacos2:
+    hostname: nacos2
+    container_name: vavr-nacos-8849
+    image: nacos/nacos-server:latest
+    volumes:
+      - ./data/nacos/cluster-logs/nacos2:/home/nacos/logs
+      - ./data/nacos/init.d/custom.properties:/home/nacos/init.d/custom.properties
+    ports:
+      - "38849:8848"
+    env_file:
+      - ./env/nacos-hostname.env
+    restart: always
+    networks:
+      - vavr-top
+    depends_on:
+      - mysql
+  nacos3:
+    hostname: nacos3
+    container_name: vavr-nacos-8850
+    image: nacos/nacos-server:latest
+    volumes:
+      - ./data/nacos/cluster-logs/nacos3:/home/nacos/logs
+      - ./data/nacos/init.d/custom.properties:/home/nacos/init.d/custom.properties
+    ports:
+      - "38850:8848"
+    env_file:
+      - ./env/nacos-hostname.env
+    restart: always
+    networks:
+      - vavr-top
+    depends_on:
+      - mysql
+
+  mysql:
+    hostname: mysql
+    container_name: nacos-mysql
+    image: nacos/nacos-mysql:5.7
+    env_file:
+      - env/mysql.env
+    restart: always
+    networks:
+      - vavr-top
+    volumes:
+      - ./data/nacos/mysql:/var/lib/mysql
+    ports:
+      - "33306:3306"
+
+
+networks:
+  vavr-top:
+    external: true
+

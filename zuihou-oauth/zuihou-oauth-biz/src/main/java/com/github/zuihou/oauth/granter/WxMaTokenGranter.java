@@ -1,79 +1,71 @@
 package com.github.zuihou.oauth.granter;
 
-import cn.hutool.core.bean.copier.CopyOptions;
+import cn.binarywang.wx.miniapp.api.WxMaService;
+import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
+import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.servlet.ServletUtil;
 import com.github.zuihou.authority.dto.auth.LoginParamDTO;
-import com.github.zuihou.authority.entity.auth.Application;
 import com.github.zuihou.authority.entity.auth.User;
 import com.github.zuihou.authority.entity.auth.UserToken;
-import com.github.zuihou.authority.service.auth.ApplicationService;
-import com.github.zuihou.authority.service.auth.UserService;
 import com.github.zuihou.base.R;
-import com.github.zuihou.boot.utils.WebUtils;
 import com.github.zuihou.context.BaseContextHandler;
-import com.github.zuihou.database.properties.DatabaseProperties;
 import com.github.zuihou.database.properties.MultiTenantType;
 import com.github.zuihou.exception.code.ExceptionCode;
-import com.github.zuihou.jwt.TokenUtil;
 import com.github.zuihou.jwt.model.AuthInfo;
-import com.github.zuihou.jwt.model.JwtUserInfo;
-import com.github.zuihou.jwt.utils.JwtUtil;
 import com.github.zuihou.oauth.event.LoginEvent;
 import com.github.zuihou.oauth.event.model.LoginStatusDTO;
+import com.github.zuihou.oauth.granter.wxma.WxMaConfiguration;
 import com.github.zuihou.oauth.utils.TimeUtils;
 import com.github.zuihou.tenant.entity.Tenant;
 import com.github.zuihou.tenant.enumeration.TenantStatusEnum;
-import com.github.zuihou.tenant.service.TenantService;
-import com.github.zuihou.utils.BeanPlusUtil;
 import com.github.zuihou.utils.BizAssert;
-import com.github.zuihou.utils.DateUtils;
 import com.github.zuihou.utils.SpringUtils;
 import com.github.zuihou.utils.StrHelper;
-import com.github.zuihou.utils.StrPool;
 import lombok.extern.slf4j.Slf4j;
-import net.oschina.j2cache.CacheChannel;
-import org.springframework.beans.factory.annotation.Autowired;
+import me.chanjar.weixin.common.error.WxErrorException;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
-import static com.github.zuihou.context.BaseContextConstants.BASIC_HEADER_KEY;
+import static com.github.zuihou.oauth.granter.WxMaTokenGranter.GRANT_TYPE;
 import static com.github.zuihou.utils.BizAssert.gt;
 import static com.github.zuihou.utils.BizAssert.notNull;
 
 /**
- * 验证码TokenGranter
- *
- * @author Chill
+ * @author zhaoyk
+ * @createDate 2020/11/6 16:58
+ * @modifyDate
+ * @modifyUser
  */
 @Slf4j
-public abstract class AbstractTokenGranter implements TokenGranter {
-    @Autowired
-    protected TokenUtil tokenUtil;
-    @Autowired
-    protected UserService userService;
-    @Autowired
-    protected TenantService tenantService;
-    @Autowired
-    protected CacheChannel cacheChannel;
-    @Autowired
-    protected ApplicationService applicationService;
-    @Autowired
-    protected DatabaseProperties databaseProperties;
+@Component(GRANT_TYPE)
+public class WxMaTokenGranter extends AbstractTokenGranter {
 
-    /**
-     * 处理登录逻辑
-     *
-     * @param loginParam 登录参数
-     * @return 认证信息
-     */
+    static final String GRANT_TYPE = "wxma";
+
+    @Override
+    public R<AuthInfo> grant(LoginParamDTO loginParam) {
+        return this.login(loginParam);
+    }
+
+    @Override
     protected R<AuthInfo> login(LoginParamDTO loginParam) {
-        if (StrHelper.isAnyBlank(loginParam.getAccount(), loginParam.getPassword())) {
-            return R.fail("请输入用户名或密码");
+        if (StrHelper.isAnyBlank(loginParam.getCode(),loginParam.getIv(),loginParam.getEncryptedData())) {
+            return R.fail("微信code、iv、encryptedData不能为空");
         }
+        final WxMaService wxService = WxMaConfiguration.getMaService("wxae640c0693f3dc26");
+        try {
+            WxMaJscode2SessionResult session = wxService.getUserService().getSessionInfo(loginParam.getCode());
+            //TODO 可以增加自己的逻辑，关联业务相关数据
+
+            WxMaUserInfo wxMaUserInfo = wxService.getUserService().getUserInfo(session.getSessionKey(), loginParam.getEncryptedData(), loginParam.getIv());
+            WxMaPhoneNumberInfo wxMaPhoneNumberInfo = wxService.getUserService().getPhoneNoInfo(session.getSessionKey(), loginParam.getEncryptedData(), loginParam.getIv());
+        } catch (WxErrorException e) {
+            return R.fail("微信登录失败");
+        }
+
         // 1，检测租户是否可用
         if (!MultiTenantType.NONE.eq(databaseProperties.getMultiTenantType())) {
             Tenant tenant = this.tenantService.getByCode(loginParam.getTenant());
@@ -110,44 +102,7 @@ public abstract class AbstractTokenGranter implements TokenGranter {
         return R.success(authInfo);
     }
 
-    protected UserToken getUserToken(String clientId, AuthInfo authInfo) {
-        UserToken userToken = new UserToken();
-        Map<String, String> fieldMapping = new HashMap<>();
-        fieldMapping.put("userId", "createUser");
-        BeanPlusUtil.copyProperties(authInfo, userToken, CopyOptions.create().setFieldMapping(fieldMapping));
-        userToken.setClientId(clientId);
-        userToken.setExpireTime(DateUtils.date2LocalDateTime(authInfo.getExpiration()));
-        return userToken;
-    }
-
-
-    /**
-     * 检测 client
-     *
-     * @return
-     */
-    protected R<String[]> checkClient() {
-        String basicHeader = ServletUtil.getHeader(WebUtils.request(), BASIC_HEADER_KEY, StrPool.UTF_8);
-        String[] client = JwtUtil.getClient(basicHeader);
-        Application application = applicationService.getByClient(client[0], client[1]);
-
-        if (application == null) {
-            return R.fail("请填写正确的客户端ID或者客户端秘钥");
-        }
-        if (!application.getStatus()) {
-            return R.fail("客户端[%s]已被禁用", application.getClientId());
-        }
-        return R.success(client);
-    }
-
-
-    /**
-     * 检测用户密码是否正确
-     *
-     * @param account  账号
-     * @param password 密码
-     * @return 用户信息
-     */
+    @Override
     protected R<User> getUser(String account, String password) {
         User user = this.userService.getByAccount(account);
         // 密码错误
@@ -194,20 +149,4 @@ public abstract class AbstractTokenGranter implements TokenGranter {
 
         return R.success(user);
     }
-
-    /**
-     * 创建用户TOKEN
-     *
-     * @param user 用户
-     * @return token
-     */
-    protected AuthInfo createToken(User user) {
-        JwtUserInfo userInfo = new JwtUserInfo(user.getId(), user.getAccount(), user.getName());
-        AuthInfo authInfo = tokenUtil.createAuthInfo(userInfo, null);
-        authInfo.setAvatar(user.getAvatar());
-        authInfo.setWorkDescribe(user.getWorkDescribe());
-        return authInfo;
-    }
-
-
 }

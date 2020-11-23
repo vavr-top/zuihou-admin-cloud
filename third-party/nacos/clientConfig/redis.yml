@@ -3,8 +3,8 @@
 zuihou:
   redis:
     ip: 127.0.0.1
-    port: 16379
-    password: SbtyMveYNfLzTks7H0apCmyStPzWJqjy
+    port: 36379
+#    password: SbtyMveYNfLzTks7H0apCmyStPzWJqjy
     database: 0
 
 spring:

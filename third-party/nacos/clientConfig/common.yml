@@ -72,7 +72,7 @@ spring:
       discovery:
         enabled: true
     rabbitmq: # 使用指定的队列
-      queue: zuihou_zipkin
+      queue: zipkin
   #被追踪的可能性，默认是0.1 表示百分之10
   sleuth:
     enabled: ${zuihou.zipkin.enabled}

@@ -35,3 +35,13 @@ generatorConfig.xml
 third-party/nacos/derby.log
 third-party/nacos/data/
 third-party/nacos/work/
+/docker-compose/data/
+/docker-compose/data/grafana/
+/docker-compose/data/rabbitmq/
+/docker-compose/data/elasticsearch/
+/docker-compose/data/logs/
+/docker-compose/data/kibana/
+/docker-compose/data/redis/
+/docker-compose/data/zipkin/
+/docker-compose/data/zipkin-server/
+/docker-compose/data/nacos/

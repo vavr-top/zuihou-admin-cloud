@@ -33,7 +33,9 @@
         <module>zuihou-msgs</module>
         <module>zuihou-file</module>
         <module>zuihou-gateway</module>
+<!--
         <module>zuihou-jobs</module>
+-->
         <module>zuihou-support</module>
         <!-- 以下两个模块为测试模块 -->
         <module>zuihou-demo</module>
@@ -41,7 +43,7 @@
     </modules>
 
     <properties>
-        <zuihou-commons.version>2.6.0</zuihou-commons.version>
+        <zuihou-commons.version>2.7.0</zuihou-commons.version>
         <zuihou-project.version>2.6.0-SNAPSHOT</zuihou-project.version>
         <seata.version>1.2.0</seata.version>
         <java.version>1.8</java.version>
