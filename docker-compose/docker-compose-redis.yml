@@ -1,0 +1,19 @@
+version: '3'
+services:
+  redis: 
+    image: redis:alpine
+    container_name: vavr-redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: always
+    networks:
+      - vavr-top
+    volumes:
+      - ./data/redis/data:/data
+      - ./data/logs:/logs
+      - ./env/redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - 36379:6379
+
+networks:
+  vavr-top:
+    external: true

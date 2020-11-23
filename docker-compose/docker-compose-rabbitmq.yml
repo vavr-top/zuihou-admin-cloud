@@ -1,0 +1,18 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: vavr-rabbitmq
+    restart: always
+    networks:
+      - vavr-top
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia
+    ports:
+      - 35672:5672
+      - 15672:15672
+    env_file: ./env/rabbitmq.env
+
+networks:
+  vavr-top:
+    external: true

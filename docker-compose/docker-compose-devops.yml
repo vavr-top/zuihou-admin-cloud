@@ -1,0 +1,160 @@
+version: '3'
+services:
+  zipkin-server:
+    image: openzipkin/zipkin
+    container_name: vavr-zipkin-server
+    restart: always
+    volumes:
+      - ./data/zipkin-server/logs:/var/logs
+    networks:
+      - vavr-top
+    ports:
+      - 9411:9411
+    environment:
+      - RABBIT_ADDRESSES=rabbitmq:5672
+      - RABBIT_MQ_PORT=5672
+      - RABBIT_PASSWORD=guest
+      - RABBIT_USER=guest
+      - STORAGE_TYPE=elasticsearch
+      - ES_HOSTS=vavr-elasticsearch:9200
+      - ES_HTTP_LOGGING=BODY
+#    depends_on:
+#      - rabbitmq
+
+  elasticsearch:
+    image: openzipkin/zipkin-elasticsearch7
+    container_name: vavr-elasticsearch
+    restart: always
+    environment:
+      - cluster.name=elasticsearch
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - node.name=elasticsearch_node_1
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
+      - ./data/elasticsearch/logs:/usr/share/elasticsearch/logs
+      - ./env/devops/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    networks:
+      - vavr-top
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+  skywalking-oap:
+    image: wutang/skywalking-oap:6.1.0
+    container_name: skywalking-oap
+    networks:
+      - vavr-top
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+    restart: always
+    ports:
+      - 11800:11800
+      - 12800:12800
+    volumes:
+      - ./env/devops/skywalking/config:/apache-skywalking-apm-bin/config:ro
+
+  skywalking-ui:
+    image: wutang/skywalking-ui:6.1.0
+    container_name: skywalking-ui
+    networks:
+      - vavr-top
+    depends_on:
+      - skywalking-oap
+    links:
+      - skywalking-oap
+    restart: always
+    ports:
+      - 38080:8080
+    environment:
+      collector.ribbon.listOfServers: skywalking-oap:12800
+
+  kibana:
+    image: kibana:5.6.14
+    container_name: vavr-kibana
+    restart: always
+    volumes:
+      - ./data/kibana/logs:/var/logs/kibana
+      - ./env/devops/kibana.yml:/etc/kibana/kibana.yml
+    networks:
+      - vavr-top
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+
+  exporter:
+    container_name: vavr-mysql-exporter
+    image: prom/mysqld-exporter
+    env_file:
+      - ./env/mysql-exporter.env
+    restart: always
+    networks:
+      - vavr-top
+    ports:
+      - "39104:9104"
+
+  prometheus:
+    container_name: vavr-prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - ./env/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "39090:9090"
+    depends_on:
+      - nacos1
+      - nacos2
+      - nacos3
+      - storage
+    restart: on-failure
+    networks:
+      - vavr-top
+
+  grafana:
+    container_name: vavr-grafana
+    image: grafana/grafana:latest
+    volumes:
+      - ./data/grafana/lib:/var/lib/grafana
+      - ./data/grafana/logs:/var/logs/grafana
+    ports:
+      - 33000:3000
+    restart: on-failure
+    networks:
+      - vavr-top
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    restart: always
+    networks:
+      -  vavr-top
+
+  setup_grafana_datasource:
+    image: appropriate/curl
+    container_name: setup_grafana_datasource
+    depends_on:
+      - grafana
+    volumes:
+      - ./env/prometheus/create-datasource-and-dashboard.sh:/create.sh:ro
+    command: /create.sh
+    restart: always
+    networks:
+      -  vavr-top
+
+networks:
+  vavr-top:
+    external: true

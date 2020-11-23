@@ -8,7 +8,7 @@ zuihou:
     driverClassName: com.mysql.cj.jdbc.Driver
     database: zuihou_defaults
     username: root
-    password: root
+    password: xeelink
     url: jdbc:mysql://${zuihou.mysql.ip}:${zuihou.mysql.port}/${zuihou.mysql.database}?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&autoReconnect=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&nullCatalogMeansCurrent=true
   database: # 字段介绍参考 DatabaseProperties
     tenantDatabasePrefix: zuihou_base

@@ -33,8 +33,8 @@ public class DashboardController {
 
     @Autowired
     private LoginLogService loginLogService;
-    @Autowired
-    private UidGenerator uidGenerator;
+//    @Autowired
+//    private UidGenerator uidGenerator;
 
     /**
      * 最近10天访问记录
@@ -57,14 +57,14 @@ public class DashboardController {
         return R.success(data);
     }
 
-    /**
-     * 生成id
-     *
-     * @return
-     */
-    @GetMapping("/common/generateId")
-    public R<Object> generate() {
-        long uid = uidGenerator.getUID();
-        return R.success(uid + "length" + String.valueOf(uid).length());
-    }
+//    /**
+//     * 生成id
+//     *
+//     * @return
+//     */
+//    @GetMapping("/common/generateId")
+//    public R<Object> generate() {
+//        long uid = uidGenerator.getUID();
+//        return R.success(uid + "length" + String.valueOf(uid).length());
+//    }
 }

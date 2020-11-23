@@ -2,12 +2,7 @@ package com.github.zuihou.authority.dto.auth;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotEmpty;
@@ -39,12 +34,18 @@ public class LoginParamDTO {
     @ApiModelProperty(value = "密码")
     private String password;
 
+    @ApiModelProperty(value = "微信iv")
+    private String iv;
+
+    @ApiModelProperty(value = "完整用户信息的加密数据")
+    private String encryptedData;
+
     /**
      * password: 账号密码
      * refresh_token: 刷新token
      * captcha: 验证码
      */
-    @ApiModelProperty(value = "授权类型", example = "captcha", allowableValues = "captcha,refresh_token,password")
+    @ApiModelProperty(value = "授权类型", example = "captcha", allowableValues = "captcha,refresh_token,password,wxma")
     @NotEmpty(message = "授权类型不能为空")
     private String grantType;
 
