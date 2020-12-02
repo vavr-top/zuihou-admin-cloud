@@ -18,6 +18,20 @@ services:
     restart: always
     networks:
       - vavr-top
+    environment:
+      - cluster.name=elasticsearch
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
+      - node.name=elasticsearch_node_1
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
+      - ./data/elasticsearch/logs:/usr/share/elasticsearch/logs
+      - ./env/devops/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
   # The zipkin process services the UI, and also exposes a POST endpoint that
   # instrumentation can send trace data to. Scribe is disabled by default.
@@ -28,18 +42,19 @@ services:
     environment:
       - STORAGE_TYPE=elasticsearch
       # Point the zipkin at the storage backend
-      - ES_HOSTS=elasticsearch:9200
+      - ES_HOSTS=http://elasticsearch:9200
       # Uncomment to enable scribe
       # - SCRIBE_ENABLED=true
       # Uncomment to enable self-tracing
       # - SELF_TRACING_ENABLED=true
       # Uncomment to enable debug logging
       # - JAVA_OPTS=-Dlogging.level.zipkin2=DEBUG
+      - RABBIT_ADDRESSES=rabbitmq
     ports:
       # Port used for the Zipkin UI and HTTP Api
       - 9411:9411
       # Uncomment if you set SCRIBE_ENABLED=true
-      # - 9410:9410
+      - 9410:9410
     depends_on:
       - storage
     restart: always

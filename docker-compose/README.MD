@@ -5,3 +5,5 @@ docker-compose -f docker-compose-sentinel-dashboard.yml up -d
 docker-compose -f docker-compose-sentinel-dashboard.yml stop
 docker-compose -f docker-compose-devops.yml up -d
 docker-compose -f docker-compose-devops.yml stop
+docker-compose -f docker-compose-zipkin.yml up -d
+docker-compose -f docker-compose-zipkin.yml stop
