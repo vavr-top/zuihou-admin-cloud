@@ -30,7 +30,7 @@ public interface DemoFeignApi {
                  @RequestParam(value = "ldt", required = false) LocalDateTime ldt);
 
     @PostMapping("/post")
-    R<RestTestDTO> post(@RequestParam("key") ConcurrentHashMap String key);
+    R<RestTestDTO> post(@RequestParam("key") String key);
 
     @PostMapping("/post2")
     R<RestTestDTO> post(@RequestBody RestTestDTO order);

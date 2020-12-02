@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.zuihou.uzi.pet.dao.UzUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.github.zuihou.uzi.pet.entity.UzUser">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="create_user" jdbcType="BIGINT" property="createUser"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="update_user" jdbcType="BIGINT" property="updateUser"/>
+        <result column="unionid" jdbcType="VARCHAR" property="unionid"/>
+        <result column="openid" jdbcType="VARCHAR" property="openid"/>
+        <result column="openid_mini" jdbcType="VARCHAR" property="openidMini"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="sex" jdbcType="TINYINT" property="sex"/>
+        <result column="mobile" jdbcType="VARCHAR" property="mobile"/>
+        <result column="avatar" jdbcType="VARCHAR" property="avatar"/>
+        <result column="auth_name" jdbcType="VARCHAR" property="authName"/>
+        <result column="auth_idcard" jdbcType="VARCHAR" property="authIdcard"/>
+        <result column="auth_data" jdbcType="LONGVARCHAR" property="authData"/>
+        <result column="auth_status" jdbcType="TINYINT" property="authStatus"/>
+        <result column="auth_time" jdbcType="TIMESTAMP" property="authTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,create_time,create_user,update_time,update_user,
+        unionid, openid, openid_mini, nickname, sex, mobile, avatar, auth_name, auth_idcard, auth_data, auth_status, auth_time
+    </sql>
+
+</mapper>

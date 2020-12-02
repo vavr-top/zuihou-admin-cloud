@@ -33,13 +33,13 @@
         <module>zuihou-msgs</module>
         <module>zuihou-file</module>
         <module>zuihou-gateway</module>
-<!--
         <module>zuihou-jobs</module>
--->
         <module>zuihou-support</module>
         <!-- 以下两个模块为测试模块 -->
         <module>zuihou-demo</module>
         <module>zuihou-order</module>
+
+        <module>zuihou-pet</module>
     </modules>
 
     <properties>
